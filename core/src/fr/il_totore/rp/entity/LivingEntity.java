@@ -3,12 +3,12 @@ package fr.il_totore.rp.entity;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class LivingEntity extends Entity implements DamageableEntity {
+public abstract class LivingEntity extends Entity implements DamageableEntity {
 
     private double health;
 
-    public LivingEntity(Actor actor, Rectangle boundingBox) {
-        super(actor, boundingBox);
+    public LivingEntity(EntityType type, Rectangle boundingBox) {
+        super(type, boundingBox);
     }
 
     @Override
@@ -18,6 +18,6 @@ public class LivingEntity extends Entity implements DamageableEntity {
 
     @Override
     public void damage() {
-        
+
     }
 }
