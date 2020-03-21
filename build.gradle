@@ -9,10 +9,6 @@ buildscript {
         jcenter()
         google()
     }
-    dependencies {
-        
-
-    }
 }
 
 
@@ -66,5 +62,6 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
     }
 }
