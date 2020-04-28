@@ -9,19 +9,20 @@ buildscript {
         jcenter()
         google()
     }
-    dependencies {
-        
-
-    }
 }
+
 
 allprojects {
     apply plugin: "eclipse"
+    apply plugin: "java"
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     version = '1.0'
     ext {
         appName = "rpg-test"
-        gdxVersion = '1.9.10'
+        gdxVersion = '1.9.11-SNAPSHOT'
         roboVMVersion = '2.3.8'
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
@@ -61,6 +62,6 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        
+        api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
     }
 }
