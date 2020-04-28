@@ -7,6 +7,6 @@ import fr.il_totore.rp.world.GameMap;
 public class Player extends LivingEntity {
 
     public Player(GameMap map, Vector3 position) {
-        super(EntityType.PLAYER, new Rectangle(0, 0, 40, 53), map, position);
+        super(EntityType.PLAYER, new Rectangle(0, 0, 1.25f, 1.65f), map, position);
     }
 }

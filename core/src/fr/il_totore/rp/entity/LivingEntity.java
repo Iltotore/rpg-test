@@ -7,6 +7,7 @@ import fr.il_totore.rp.world.GameMap;
 public abstract class LivingEntity extends Entity implements DamageableEntity {
 
     private double health;
+    private float walkingSpeed = 1.5f;
 
     public LivingEntity(EntityType<? extends LivingEntity> type, Rectangle boundingBox, GameMap map, Vector3 position) {
         super(type, boundingBox, map, position);
@@ -27,5 +28,17 @@ public abstract class LivingEntity extends Entity implements DamageableEntity {
 
     public void setHealth(double health) {
         this.health = health;
+    }
+
+    public float getWalkingSpeed() {
+        return walkingSpeed;
+    }
+
+    public void setWalkingSpeed(float walkingSpeed) {
+        this.walkingSpeed = walkingSpeed;
+    }
+
+    public void walk(Vector3 direction){
+        setVelocity(direction.cpy().scl(walkingSpeed));
     }
 }

@@ -2,9 +2,9 @@ package fr.il_totore.rp.util;
 
 import com.badlogic.gdx.math.Vector3;
 
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
-public class Physics implements BiFunction<Vector3, Vector3, Vector3> {
+public class Physics implements Consumer<Vector3> {
 
     private Vector3 gravity;
     private Vector3 inertness;
@@ -15,13 +15,9 @@ public class Physics implements BiFunction<Vector3, Vector3, Vector3> {
     }
 
     @Override
-    public Vector3 apply(Vector3 position, Vector3 velocity) {
-        Vector3 newPos = new Vector3(position);
-        velocity.x*=inertness.x;
-        velocity.y*=inertness.y;
-        velocity.z*=inertness.z;
+    public void accept(Vector3 velocity) {
+        velocity.scl(inertness);
         //TODO Gravity
-        return newPos.add(velocity);
     }
 
     public Vector3 getGravity() {

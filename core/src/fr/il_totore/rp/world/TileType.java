@@ -1,33 +1,25 @@
 package fr.il_totore.rp.world;
 
 import com.badlogic.gdx.math.Vector3;
-import fr.il_totore.rp.util.TexturedSprite;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 public enum TileType {
 
-    ;
+    UNKNOWN(-1, true, UnknownTile::new);
 
     private int id;
-    private TexturedSprite sprite;
     private boolean collidable;
     private Function<Vector3, Tile> tileFunction;
 
-    TileType(int id, TexturedSprite sprite, boolean collidable, Function<Vector3, Tile> tileFunction){
+    TileType(int id, boolean collidable, Function<Vector3, Tile> tileFunction){
         this.id = id;
-        this.sprite = sprite;
         this.collidable = collidable;
         this.tileFunction = tileFunction;
     }
 
     public int getId() {
         return id;
-    }
-
-    public TexturedSprite getSprite() {
-        return sprite;
     }
 
     public boolean isCollidable() {
@@ -38,10 +30,10 @@ public enum TileType {
         return tileFunction.apply(position);
     }
 
-    public static Optional<TileType> getById(int id){
+    public static TileType getById(int id){
         for(TileType type : values()){
-            if(type.getId() == id) return Optional.of(type);
+            if(type.getId() == id) return type;
         }
-        return Optional.empty();
+        return UNKNOWN;
     }
 }

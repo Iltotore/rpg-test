@@ -7,7 +7,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector3;
 import fr.il_totore.rp.entity.Entity;
-import fr.il_totore.rp.util.Comparison;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,22 +23,26 @@ public class TiledGameMap extends GameMap {
         this.renderer = renderer;
     }
 
-    public void load(){
-        for(int y = 0; y < getLayers(); y++){
-            TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(y);
-            List<List<Tile>> lineList = new ArrayList<>();
+    public void load() {
+        for(int z = 0; z < map.getLayers().getCount(); z++) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(z);
+            List<List<Tile>> columns = new ArrayList<>();
             for(int x = 0; x < layer.getWidth(); x++) {
-                List<Tile> columnList = new ArrayList<>();
-                for(int z = 0; z < layer.getHeight(); z++) {
-                    TiledMapTileLayer.Cell cell = layer.getCell(x, z);
-                    Tile tile = TileType.getById(cell.getTile().getId())
-                            .orElseThrow(() -> new IllegalArgumentException("Invalid type id: " + cell.getTile().getId()))
-                            .createTile(new Vector3(x, y, z));
-                    columnList.add(tile);
+                List<Tile> tiles = new ArrayList<>();
+                for(int y = 0; y < layer.getHeight(); y++) {
+                    TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+                    Tile tile;
+                    if(cell == null || cell.getTile() == null) {
+                        tile = new UnknownTile(new Vector3(x, y, z));
+                    } else {
+                        tile = TileType.getById(cell.getTile().getId())
+                                .createTile(new Vector3(x, y, z));
+                    }
+                    tiles.add(tile);
                 }
-                lineList.add(columnList);
+                columns.add(tiles);
             }
-            loadedTiles.add(lineList);
+            loadedTiles.add(columns);
         }
     }
 
@@ -75,26 +78,20 @@ public class TiledGameMap extends GameMap {
     }
 
     @Override
-    public List<List<Tile>> getLayer(int y) {
-        return loadedTiles.get(y);
+    public List<List<Tile>> getLayer(int z) {
+        return loadedTiles.get(z);
     }
 
     @Override
     public Tile getTile(Vector3 position) {
-        return getLayer((int) position.y).get((int) position.x).get((int) position.z);
+        return getLayer((int) position.z).get((int) position.x).get((int) position.y);
     }
 
     @Override
     public List<Tile> getTilesBetween(List<Tile> list, Vector3 start, Vector3 end) {
-        Comparison<Float> compX = Comparison.of(start.x, end.x);
-        Comparison<Float> compY = Comparison.of(start.y, end.y);
-        Comparison<Float> compZ = Comparison.of(start.z, end.z);
-        for(int y = compY.getMin().intValue(); y < compY.getMax(); y++) {
-            for(int x = compX.getMin().intValue(); x < compX.getMax(); x++) {
-                for(int z = compZ.getMin().intValue(); z < compZ.getMax(); z++){
-                    list.add(getTile(new Vector3(x, y, z)));
-                }
-            }
+        float interpolation = 1/end.cpy().sub(start).len();
+        for(float f = 0; f < 1; f+=interpolation){
+            list.add(getTile(start.cpy().lerp(end, f)));
         }
         return list;
     }

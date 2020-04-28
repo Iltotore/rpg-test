@@ -7,17 +7,17 @@ import fr.il_totore.rp.entity.Entity;
 import fr.il_totore.rp.util.Physics;
 
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public abstract class GameMap {
 
-    private static final Physics Y_GRAVITY = Physics.builder()
-            //.gravityY(-1)
-            .inertness(1f)
+    private static final Physics Z_GRAVITY = Physics.builder()
+            //.gravityZ(-1)
+            .inertness(0.75f)
             .build();
 
     private List<Entity> entities;
-    private BiFunction<Vector3, Vector3, Vector3> physics = Y_GRAVITY;
+    private Consumer<Vector3> physics = Z_GRAVITY;
 
     public GameMap(List<Entity> entities){
         this.entities = entities;
@@ -31,11 +31,16 @@ public abstract class GameMap {
 
     public void tick(float delta) {
         for (Entity entity : entities) {
-            entity.tick(Y_GRAVITY, delta);
+            entity.tick(Z_GRAVITY, delta);
         }
     }
 
+    public void addEntity(Entity entity){
+        entities.add(entity);
+    }
 
+
+    public abstract void load();
     public abstract int getWidth();
     public abstract int getHeight();
     public abstract int getLayers();

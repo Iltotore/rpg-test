@@ -11,7 +11,7 @@ import fr.il_totore.rp.world.Tile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public abstract class Entity {
 
@@ -57,19 +57,22 @@ public abstract class Entity {
     public void render(SpriteBatch batch){
         TexturedSprite sprite = type.getSprite();
         Texture texture = sprite.getTexture(frame++);
-        batch.draw(texture, position.x+boundingBox.getX(), position.z+boundingBox.getY(), boundingBox.getWidth(), boundingBox.getHeight());
+        batch.draw(texture, (position.x+boundingBox.getX())*32, (position.y+boundingBox.getY())*32, boundingBox.getWidth()*32, boundingBox.getHeight()*32);
     }
 
-    public void tick(BiFunction<Vector3, Vector3, Vector3> physics, float delta){
-        position.set(physics.apply(position, velocity));
+    public void tick(Consumer<Vector3> physics, float delta){
+        move(velocity);
+        physics.accept(velocity);
     }
 
     public void move(Vector3 movement){
-        Vector3 nextPosition = new Vector3(position).add(movement);
-        Vector3 direction = movement.nor();
+        Vector3 nextPosition = position.cpy().add(movement);
+        Vector3 direction = movement.cpy().nor();
+        System.out.println(direction);
         List<Tile> tiles = map.getTilesBetween(new ArrayList<>(), position, nextPosition);
         Optional<Tile> tileOptional = tiles.stream().filter(Tile::isCollidable).findFirst();
-        tileOptional.ifPresent(tile -> nextPosition.set(tile.getPosition().add(0.5f).sub(direction.x*0.5f, direction.y*0.5f, direction.z*0.5f)));
+        System.out.println(tileOptional.orElse(null));
+        tileOptional.ifPresent(tile -> nextPosition.set(tile.getPosition()).add(0.5f).sub(direction.scl(0.5f)));
         position.set(nextPosition);
     }
 
