@@ -67,6 +67,7 @@ public abstract class Entity {
 
     public void move(Vector3 movement){
         Vector3 nextPosition = position.cpy().add(movement);
+
         Vector3 direction = movement.cpy().nor();
         List<Tile> tiles = map.getTilesBetween(new ArrayList<>(), position, nextPosition);
         Optional<Tile> tileOptional = tiles.stream().filter(Tile::isCollidable).findFirst();
