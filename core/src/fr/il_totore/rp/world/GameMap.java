@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import fr.il_totore.rp.entity.Entity;
+import fr.il_totore.rp.util.CompositeVelocity;
 import fr.il_totore.rp.util.Physics;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public abstract class GameMap {
             .build();
 
     private List<Entity> entities;
-    private Consumer<Vector3> physics = Z_GRAVITY;
+    private Consumer<CompositeVelocity> physics = Z_GRAVITY;
 
     public GameMap(List<Entity> entities){
         this.entities = entities;

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import fr.il_totore.rp.util.CompositeVelocity;
 import fr.il_totore.rp.util.TexturedSprite;
 import fr.il_totore.rp.world.GameMap;
 import fr.il_totore.rp.world.Tile;
@@ -21,7 +22,7 @@ public abstract class Entity {
     private Vector3 position;
     private int frame = 0;
     private float maxSpeed = 14;
-    private Vector3 velocity = new Vector3();
+    private CompositeVelocity velocity = new CompositeVelocity();
 
     public Entity(EntityType<? extends Entity> type, Rectangle boundingBox, GameMap map, Vector3 position){
         this.type = type;
@@ -46,12 +47,16 @@ public abstract class Entity {
         this.position = position;
     }
 
-    public Vector3 getVelocity() {
+    public CompositeVelocity getVelocity() {
         return velocity;
     }
 
-    public void setVelocity(Vector3 velocity) {
-        this.velocity = velocity;
+    public void setVelocity(String key, Vector3 vector) {
+        velocity.setComponent(key, vector);
+    }
+
+    public void setVelocity(Vector3 vector){
+        setVelocity(CompositeVelocity.BASE, vector);
     }
 
     public void render(SpriteBatch batch){
@@ -60,8 +65,8 @@ public abstract class Entity {
         batch.draw(texture, (position.x+boundingBox.getX())*32, (position.y+boundingBox.getY())*32, boundingBox.getWidth()*32, boundingBox.getHeight()*32);
     }
 
-    public void tick(Consumer<Vector3> physics, float delta){
-        move(velocity);
+    public void tick(Consumer<CompositeVelocity> physics, float delta){
+        move(velocity.toFinalVector());
         physics.accept(velocity);
     }
 

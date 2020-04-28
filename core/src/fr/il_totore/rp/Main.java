@@ -2,6 +2,7 @@ package fr.il_totore.rp;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,7 +13,11 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector3;
 import fr.il_totore.rp.entity.Player;
-import fr.il_totore.rp.key.*;
+import fr.il_totore.rp.key.HoldInputProcessor;
+import fr.il_totore.rp.key.Input;
+import fr.il_totore.rp.key.InputController;
+import fr.il_totore.rp.key.KeyInputType;
+import fr.il_totore.rp.util.CompositeVelocity;
 import fr.il_totore.rp.world.GameMap;
 import fr.il_totore.rp.world.TiledGameMap;
 
@@ -33,10 +38,10 @@ public class Main extends ApplicationAdapter implements InputProcessor {
     public void create() {
         batch = new SpriteBatch();
         controller = new InputController();
-        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.RIGHT), input -> player.walk(new Vector3(0.2f, 0, 0)));
-        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.LEFT), input -> player.walk(new Vector3(-0.2f, 0, 0)));
-        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.UP), input -> player.walk(new Vector3(0, 0.2f, 0)));
-        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.DOWN), input -> player.walk(new Vector3(0, -0.2f, 0)));
+        controller.put(new HoldInputProcessor(Keys.RIGHT), input -> player.walk(CompositeVelocity.RIGHT, new Vector3(0.2f, 0, 0)));
+        controller.put(new HoldInputProcessor(Keys.LEFT), input -> player.walk(CompositeVelocity.LEFT, new Vector3(-0.2f, 0, 0)));
+        controller.put(new HoldInputProcessor(Keys.UP), input -> player.walk(CompositeVelocity.UP, new Vector3(0, 0.2f, 0)));
+        controller.put(new HoldInputProcessor(Keys.DOWN), input -> player.walk(CompositeVelocity.DOWN, new Vector3(0, -0.2f, 0)));
         Gdx.input.setInputProcessor(this);
 
         float w = Gdx.graphics.getWidth();

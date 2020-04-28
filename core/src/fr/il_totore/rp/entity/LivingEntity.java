@@ -38,7 +38,7 @@ public abstract class LivingEntity extends Entity implements DamageableEntity {
         this.walkingSpeed = walkingSpeed;
     }
 
-    public void walk(Vector3 direction){
-        setVelocity(direction.cpy().scl(walkingSpeed));
+    public void walk(String key, Vector3 direction){
+        setVelocity(key, direction.cpy().scl(walkingSpeed));
     }
 }

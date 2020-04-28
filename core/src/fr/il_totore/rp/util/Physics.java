@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import java.util.function.Consumer;
 
-public class Physics implements Consumer<Vector3> {
+public class Physics implements Consumer<CompositeVelocity> {
 
     private Vector3 gravity;
     private Vector3 inertness;
@@ -15,8 +15,8 @@ public class Physics implements Consumer<Vector3> {
     }
 
     @Override
-    public void accept(Vector3 velocity) {
-        velocity.scl(inertness);
+    public void accept(CompositeVelocity velocity) {
+        velocity.forEach(vector -> vector.scl(inertness));
         //TODO Gravity
     }
 
