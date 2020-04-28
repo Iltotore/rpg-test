@@ -64,17 +64,17 @@ public class TiledGameMap extends GameMap {
 
     @Override
     public int getWidth() {
-        return 0;
+        return ((TiledMapTileLayer)map.getLayers().get(0)).getWidth();
     }
 
     @Override
     public int getHeight() {
-        return 0;
+        return ((TiledMapTileLayer)map.getLayers().get(0)).getHeight();
     }
 
     @Override
     public int getLayers() {
-        return 0;
+        return map.getLayers().getCount();
     }
 
     @Override

@@ -2,6 +2,7 @@ package fr.il_totore.rp.world;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import fr.il_totore.rp.entity.Entity;
 import fr.il_totore.rp.util.Physics;
@@ -39,6 +40,9 @@ public abstract class GameMap {
         entities.add(entity);
     }
 
+    public Rectangle getRectangle(){
+        return new Rectangle(0, 0, getWidth(), getHeight());
+    }
 
     public abstract void load();
     public abstract int getWidth();

@@ -33,10 +33,10 @@ public class Main extends ApplicationAdapter implements InputProcessor {
     public void create() {
         batch = new SpriteBatch();
         controller = new InputController();
-        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.RIGHT), input -> player.walk(new Vector3(1, 0, 0)));
-        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.LEFT), input -> player.walk(new Vector3(-1, 0, 0)));
-        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.UP), input -> player.walk(new Vector3(0, 1, 0)));
-        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.DOWN), input -> player.walk(new Vector3(0, -1, 0)));
+        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.RIGHT), input -> player.walk(new Vector3(0.5f, 0, 0)));
+        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.LEFT), input -> player.walk(new Vector3(-0.5f, 0, 0)));
+        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.UP), input -> player.walk(new Vector3(0, 0.5f, 0)));
+        controller.put(new HoldInputProcessor(com.badlogic.gdx.Input.Keys.DOWN), input -> player.walk(new Vector3(0, -0.5f, 0)));
         Gdx.input.setInputProcessor(this);
 
         float w = Gdx.graphics.getWidth();

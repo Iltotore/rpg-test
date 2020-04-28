@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 public enum TileType {
 
-    UNKNOWN(-1, true, UnknownTile::new);
+    UNKNOWN(-1, false, UnknownTile::new);
 
     private int id;
     private boolean collidable;

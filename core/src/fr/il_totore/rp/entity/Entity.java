@@ -68,11 +68,12 @@ public abstract class Entity {
     public void move(Vector3 movement){
         Vector3 nextPosition = position.cpy().add(movement);
         Vector3 direction = movement.cpy().nor();
-        System.out.println(direction);
         List<Tile> tiles = map.getTilesBetween(new ArrayList<>(), position, nextPosition);
         Optional<Tile> tileOptional = tiles.stream().filter(Tile::isCollidable).findFirst();
-        System.out.println(tileOptional.orElse(null));
         tileOptional.ifPresent(tile -> nextPosition.set(tile.getPosition()).add(0.5f).sub(direction.scl(0.5f)));
+
+        if(!map.getRectangle().contains(nextPosition.x, nextPosition.y)) return;
+
         position.set(nextPosition);
     }
 
