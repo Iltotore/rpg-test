@@ -15,7 +15,7 @@ public class Health
         this.value -=damage.toHealth().value;
     }
 
-    public boolean isLessOrEqualsThan(double i) {
+    public boolean isLessOrEquals(double i) {
         return this.value <= i;
     }
 
