@@ -30,8 +30,8 @@ public class LivingEntity extends Entity implements Damageable {
     }
 
     @Override
-    public boolean isDestroy() {
-        return this.health.isLessOrEquals(0);
+    public boolean isDestroyed() {
+        return this.health.isLessOrEqualsThan(0);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class LivingEntity extends Entity implements Damageable {
 
     @Override
     public Damage getDamageRest() {
-        if(this.health.isLessOrEquals(0)) {
+        if(this.health.isLessOrEqualsThan(0)) {
             Damage damage = this.health.toDamage();
             this.health = new Health(0);
             return damage;
@@ -50,9 +50,8 @@ public class LivingEntity extends Entity implements Damageable {
     }
 
     @Override
-    public Damage damage(Damage damage) {
-        Health healthDamage = damage.toHealth();
-        this.health.damage(healthDamage);
+    public Damage applyDamage(Damage damage) {
+        this.health.damage(damage);
         return this.getDamageRest();
     }
 }

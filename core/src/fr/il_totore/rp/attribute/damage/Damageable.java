@@ -5,12 +5,7 @@ import fr.il_totore.rp.attribute.health.Health;
 public interface Damageable
 {
 
-    Damage damage(Damage damage);
-
-    default Damage damages(Damages damages)
-    {
-        return damages.execute(this);
-    }
+    Damage applyDamage(Damage damage);
 
     boolean isDestroyed();
 

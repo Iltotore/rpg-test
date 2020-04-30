@@ -9,14 +9,12 @@ public class Damage
     private double value;
     private final DamageType damageType;
 
-    public Damage(double damage)
-    {
+    public Damage(double damage) {
         this.damageType = DamageType.PHYSICAL;
         this.value = damage;
     }
 
-    public Damage(double damage, DamageType damageType)
-    {
+    public Damage(double damage, DamageType damageType) {
         this.damageType = damageType;
         this.value = damage;
     }

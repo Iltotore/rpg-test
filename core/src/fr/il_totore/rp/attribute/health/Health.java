@@ -10,12 +10,12 @@ public class Health
         this.value = health;
     }
 
-    public void damage(Health damage)
+    public void damage(Damage damage)
     {
-        this.value -=damage.value;
+        this.value -=damage.toHealth().value;
     }
 
-    public boolean isLessOrEquals(double i) {
+    public boolean isLessOrEqualsThan(double i) {
         return this.value <= i;
     }
 
