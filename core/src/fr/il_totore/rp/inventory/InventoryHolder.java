@@ -1,10 +1,15 @@
 package fr.il_totore.rp.inventory;
 
-/**
- * Created by Hokkaydo on 29-04-2020.
- */
+import java.util.Optional;
+
 public interface InventoryHolder {
 
-    Inventory getInventory();
+    /**
+     * @return an {@link java.util.Optional} containing
+     * {@link fr.il_totore.rp.inventory.Inventory} owned by the current
+     * {@link fr.il_totore.rp.inventory.InventoryHolder} if not null,
+     * empty otherwise
+     * */
+    Optional<Inventory> getInventory();
 
 }

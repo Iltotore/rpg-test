@@ -19,18 +19,13 @@ public class PlayerInventory implements Inventory{
         this.contents = new ItemStack[InventoryType.PLAYER.getSize()];
     }
     @Override
-    public InventoryHolder getInventoryHolder() {
-        return inventoryHolder;
+    public Optional<InventoryHolder> getInventoryHolder() {
+        return Optional.ofNullable(inventoryHolder);
     }
 
     @Override
-    public ItemStack[] getContents() {
-        return contents;
-    }
-
-    @Override
-    public void setContents(ItemStack[] contents) {
-        this.contents = contents;
+    public Optional<ItemStack[]> getContents() {
+        return Optional.ofNullable(contents);
     }
 
     @Override
@@ -39,14 +34,14 @@ public class PlayerInventory implements Inventory{
     }
 
     @Override
-    public void setItemStack(int slot, ItemStack itemStack) throws IllegalArgumentException {
-        if(slot > contents.length - 1) throw new IllegalArgumentException("Slot cannot be greater than " + this.contents.length);
+    public void setItemStack(int slot, ItemStack itemStack) {
+        if(slot > contents.length - 1) throw new IllegalArgumentException("Slot cannot be greater than " + (this.contents.length - 1));
         if(slot < 0) throw new IllegalArgumentException("Slot cannot be lower than 0");
         contents[slot] = itemStack;
     }
 
     @Override
-    public void addItemStack(ItemStack itemStack) throws IllegalArgumentException {
+    public void addItemStack(ItemStack itemStack) {
         boolean set = false;
         for (int i = 0; i < contents.length; i++) {
             if(contents[i] == null){
@@ -55,7 +50,7 @@ public class PlayerInventory implements Inventory{
                 break;
             }
         }
-        if(!set) throw new IllegalArgumentException("ItemStack could not be added to Inventory : inventory full");
+        if(!set) throw new IllegalArgumentException("ItemStack could not be added to Inventory : inventory is full");
     }
 
     @Override
@@ -64,7 +59,7 @@ public class PlayerInventory implements Inventory{
     }
 
     @Override
-    public Optional<ItemStack> getItemStack(int slot) throws IllegalArgumentException {
+    public Optional<ItemStack> getItemStack(int slot) {
         if(slot > contents.length - 1) throw new IllegalArgumentException("Slot cannot be greater than " + this.contents.length);
         return Optional.ofNullable(contents[slot]);
     }

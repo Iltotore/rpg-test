@@ -8,6 +8,8 @@ import fr.il_totore.rp.inventory.PlayerInventory;
 import fr.il_totore.rp.util.CompositeVelocity;
 import fr.il_totore.rp.world.GameMap;
 
+import java.util.Optional;
+
 public class Player extends LivingEntity implements InventoryHolder {
 
     private CompositeVelocity velocity;
@@ -19,7 +21,7 @@ public class Player extends LivingEntity implements InventoryHolder {
     }
 
     @Override
-    public Inventory getInventory() {
-        return inventory;
+    public Optional<Inventory> getInventory() {
+        return Optional.ofNullable(inventory);
     }
 }
