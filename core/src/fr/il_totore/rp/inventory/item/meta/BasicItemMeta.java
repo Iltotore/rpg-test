@@ -32,11 +32,16 @@ public class BasicItemMeta implements ItemMeta {
 
     @Override
     public boolean isSimilar(ItemMeta itemMeta) {
-        return true;
+        return this.displayName.equals(itemMeta.getDisplayName()) && ItemMeta.SimilarCheck.areEnchantmentListsSimilar(this.enchantments, itemMeta.getEnchantments());
     }
 
     @Override
     public String getDisplayName() {
         return displayName;
+    }
+
+    @Override
+    public boolean isOfType(Class<? extends ItemMeta> clazz) {
+        return this.getClass() == clazz;
     }
 }
