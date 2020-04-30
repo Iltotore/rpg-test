@@ -82,6 +82,4 @@ public abstract class Entity {
 
         position.set(nextPosition);
     }
-
-    public abstract boolean isDead();
 }

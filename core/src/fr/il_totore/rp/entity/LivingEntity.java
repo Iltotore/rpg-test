@@ -2,31 +2,18 @@ package fr.il_totore.rp.entity;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import fr.il_totore.rp.attribute.damage.Damage;
+import fr.il_totore.rp.attribute.damage.Damageable;
+import fr.il_totore.rp.attribute.health.Health;
 import fr.il_totore.rp.world.GameMap;
 
-public abstract class LivingEntity extends Entity implements DamageableEntity {
+public class LivingEntity extends Entity implements Damageable {
 
-    private double health;
+    private Health health;
     private float walkingSpeed = 1.5f;
 
-    public LivingEntity(EntityType<? extends LivingEntity> type, Rectangle boundingBox, GameMap map, Vector3 position) {
+    public LivingEntity(EntityType<? extends LivingEntity> type, Rectangle boundingBox, GameMap map, Vector3 position, Health health) {
         super(type, boundingBox, map, position);
-    }
-
-    @Override
-    public boolean isDead() {
-        return health <= 0;
-    }
-
-    @Override
-    public void damage() {
-    }
-
-    public double getHealth() {
-        return health;
-    }
-
-    public void setHealth(double health) {
         this.health = health;
     }
 
@@ -40,5 +27,31 @@ public abstract class LivingEntity extends Entity implements DamageableEntity {
 
     public void walk(String key, Vector3 direction){
         setVelocity(key, direction.cpy().scl(walkingSpeed));
+    }
+
+    @Override
+    public boolean isDestroyed() {
+        return this.health.isLessOrEquals(0);
+    }
+
+    @Override
+    public void addHealth(Health health) {
+        this.health.add(health);
+    }
+
+    @Override
+    public Damage getDamageRest() {
+        if(this.health.isLessOrEquals(0)) {
+            Damage damage = this.health.toDamage();
+            this.health = new Health(0);
+            return damage;
+        }
+        return new Damage(0);
+    }
+
+    @Override
+    public Damage applyDamage(Damage damage) {
+        this.health.damage(damage);
+        return this.getDamageRest();
     }
 }
