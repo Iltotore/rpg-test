@@ -1,6 +1,3 @@
-/*
- * Copyright KukubeTeam (c) 2020. For all uses ask KukubeTeam for approval before.
- */
 package fr.il_totore.rp.inventory.item;
 
 import fr.il_totore.rp.inventory.item.meta.BasicItemMeta;
@@ -8,9 +5,6 @@ import fr.il_totore.rp.inventory.item.meta.ItemMeta;
 
 import java.util.Optional;
 
-/**
- * Created by Hokkaydo on 29-04-2020.
- */
 public enum Material {
 
     APPLE(0, "Apple", new BasicItemMeta());

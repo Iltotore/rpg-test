@@ -1,13 +1,7 @@
-/*
- * Copyright KukubeTeam (c) 2020. For all uses ask KukubeTeam for approval before.
- */
 package fr.il_totore.rp.inventory.item;
 
 import fr.il_totore.rp.inventory.item.meta.ItemMeta;
 
-/**
- * Created by Hokkaydo on 29-04-2020.
- */
 public class ItemStack {
 
     private int amount;

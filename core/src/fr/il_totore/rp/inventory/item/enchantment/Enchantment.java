@@ -1,15 +1,9 @@
-/*
- * Copyright KukubeTeam (c) 2020. For all uses ask KukubeTeam for approval before.
- */
 package fr.il_totore.rp.inventory.item.enchantment;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by Hokkaydo on 29-04-2020.
- */
 public enum Enchantment {
 
     PROTECTION(0, 4, "Protection");

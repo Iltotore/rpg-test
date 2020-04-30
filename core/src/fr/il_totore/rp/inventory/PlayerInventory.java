@@ -1,6 +1,3 @@
-/*
- * Copyright KukubeTeam (c) 2020. For all uses ask KukubeTeam for approval before.
- */
 package fr.il_totore.rp.inventory;
 
 import fr.il_totore.rp.inventory.item.ItemStack;
@@ -8,9 +5,6 @@ import fr.il_totore.rp.inventory.item.ItemStack;
 import java.util.Arrays;
 import java.util.Optional;
 
-/**
- * Created by Hokkaydo on 29-04-2020.
- */
 public class PlayerInventory implements Inventory{
 
     private ItemStack[] contents;

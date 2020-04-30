@@ -1,6 +1,3 @@
-/*
- * Copyright KukubeTeam (c) 2020. For all uses ask KukubeTeam for approval before.
- */
 package fr.il_totore.rp.inventory;
 
 /**
