@@ -12,7 +12,7 @@ public interface Damageable
         return damages.execute(this);
     }
 
-    boolean isDestroy();
+    boolean isDestroyed();
 
     void addHealth(Health health);
 

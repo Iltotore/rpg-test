@@ -4,27 +4,27 @@ import fr.il_totore.rp.attribute.damage.Damage;
 
 public class Health
 {
-    private double health;
+    private double value;
 
     public Health(double health) {
-        this.health = health;
+        this.value = health;
     }
 
     public void damage(Health damage)
     {
-        this.health -=damage.health;
+        this.value -=damage.value;
     }
 
-    public boolean isLessOrEqualThan(double i) {
-        return this.health <= i;
+    public boolean isLessOrEquals(double i) {
+        return this.value <= i;
     }
 
     public void add(Health healthToAdd) {
-        this.health +=healthToAdd.health;
+        this.value +=healthToAdd.value;
     }
 
     public Damage toDamage() {
-        return new Damage(Math.abs(this.health));
+        return new Damage(Math.abs(this.value));
     }
 
 }
