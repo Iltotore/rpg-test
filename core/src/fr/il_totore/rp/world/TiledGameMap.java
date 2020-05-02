@@ -2,14 +2,20 @@ package fr.il_totore.rp.world;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import fr.il_totore.rp.entity.Entity;
+import fr.il_totore.rp.util.Comparison;
+import fr.il_totore.rp.util.Condition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TiledGameMap extends GameMap {
 
@@ -35,7 +41,8 @@ public class TiledGameMap extends GameMap {
                     if(cell == null || cell.getTile() == null) {
                         tile = new UnknownTile(new Vector3(x, y, z));
                     } else {
-                        tile = TileType.getById(cell.getTile().getId())
+                        MapProperties properties = cell.getTile().getProperties();
+                        tile = TileType.getById(properties.containsKey("Type") ? properties.get("Type", String.class) : "unknown")
                                 .createTile(new Vector3(x, y, z));
                     }
                     tiles.add(tile);
@@ -83,16 +90,65 @@ public class TiledGameMap extends GameMap {
     }
 
     @Override
-    public Tile getTile(Vector3 position) {
-        return getLayer((int) position.z).get((int) position.x).get((int) position.y);
+    public Optional<Tile> getTile(Vector3 position) {
+        if(position.x < 0 || position.y < 0 || position.z < 0) return Optional.empty();
+        if(getLayers() <= (int)position.z) return Optional.empty();
+        List<List<Tile>> layer = getLayer((int) position.z);
+        if(layer.size() <= (int)position.x) return Optional.empty();
+        List<Tile> line = layer.get((int) position.x);
+        if(line.size() <= (int)position.y) return Optional.empty();
+        return Optional.of(line.get((int)position.y));
     }
 
     @Override
-    public List<Tile> getTilesBetween(List<Tile> list, Vector3 start, Vector3 end) {
-        float interpolation = 1/end.cpy().sub(start).len();
-        for(float f = 0; f < 1; f+=interpolation){
-            list.add(getTile(start.cpy().lerp(end, f)));
+    public List<Tile> getTilesBetween(List<Tile> list, Vector3 start, Vector3 end, Rectangle rectangle) {
+        Comparison<Float> compX = Comparison.of(start.x, end.x);
+        Comparison<Float> compY = Comparison.of(start.y, end.y);
+        Comparison<Float> compZ = Comparison.of(start.z, end.z);
+        for(int z = compZ.getMin().intValue(); z < compZ.getMax(); z++) {
+            for(int x = compX.getMin().intValue(); x < compX.getMax(); x++) {
+                for(int y = compY.getMin().intValue(); y < compY.getMax(); y++) {
+                    /*list.add(getTile(new Vector3(x+rectangle.x, y+rectangle.y, z)));
+                    list.add(getTile(new Vector3(x+rectangle.width, y+rectangle.y, z)));
+                    list.add(getTile(new Vector3(x+rectangle.x, y+rectangle.height, z)));
+                    list.add(getTile(new Vector3(x+rectangle.width, y+rectangle.height, z)));*/
+                }
+            }
         }
         return list;
+    }
+
+    @Override
+    public Optional<Tile> findFirstCollision(Vector3 position, Rectangle boundingBox, Vector3 end) {
+        Vector3 intPos = new Vector3((int)position.x, (int)position.y, (int)position.z);
+        Vector3 intEnd = new Vector3((int)end.x, (int)end.y, (int)end.z);
+        Vector3 direction = intEnd.sub(intPos).nor();
+        Rectangle intBB = new Rectangle((int)position.x, (int)position.y, (int)boundingBox.width, (int)boundingBox.height);
+        float dst = intPos.dst(intEnd);
+        float angleRad = new Vector2(direction.x, direction.y).angleRad();
+        boolean right = Math.cos(angleRad) > 0;
+        boolean up = Math.sin(angleRad) > 0;
+        Condition<Tile> condition = Condition.empty();
+        for(float alpha = 0; alpha < dst; alpha++){
+            intPos.add(direction);
+            intBB.setPosition(intPos.x, intPos.y);
+            if(right || up) condition = Condition.of(getTile(new Vector3(intBB.x+intBB.width, intBB.y+intBB.height, intPos.z)))
+                    .onlyIf(tile -> tile.isColliding(position, boundingBox));
+            if(condition.isPresent()) return condition.asOptional();
+
+            if(right || !up) condition = Condition.of(getTile(new Vector3(intBB.x+intBB.width, intBB.y, intPos.z)))
+                    .onlyIf(tile -> tile.isColliding(position, boundingBox));
+            if(condition.isPresent()) return condition.asOptional();
+
+            if(!right || up) condition = Condition.of(getTile(new Vector3(intBB.x, intBB.y+intBB.height, intPos.z)))
+                    .onlyIf(tile -> tile.isColliding(position, boundingBox));
+            if(condition.isPresent()) return condition.asOptional();
+
+            if(!right || !up) condition = Condition.of(getTile(new Vector3(intBB.x, intBB.y, intPos.z)))
+                    .onlyIf(tile -> tile.isColliding(position, boundingBox));
+            if(condition.isPresent()) return condition.asOptional();
+        }
+
+        return Optional.empty();
     }
 }

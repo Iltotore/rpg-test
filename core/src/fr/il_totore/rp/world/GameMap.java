@@ -9,6 +9,7 @@ import fr.il_totore.rp.util.CompositeVelocity;
 import fr.il_totore.rp.util.Physics;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public abstract class GameMap {
@@ -42,15 +43,18 @@ public abstract class GameMap {
     }
 
     public Rectangle getRectangle(){
-        return new Rectangle(0, 0, getWidth(), getHeight());
+        return new Rectangle(-1, -1, getWidth(), getHeight());
     }
 
+
+    //TODO findFirstCollision
     public abstract void load();
     public abstract int getWidth();
     public abstract int getHeight();
     public abstract int getLayers();
     public abstract List<List<Tile>> getLayer(int y);
-    public abstract Tile getTile(Vector3 vector3);
-    public abstract List<Tile> getTilesBetween(List<Tile> list, Vector3 start, Vector3 end);
+    public abstract Optional<Tile> getTile(Vector3 vector3);
+    public abstract Optional<Tile> findFirstCollision(Vector3 position, Rectangle boundingBox, Vector3 end);
+    public abstract List<Tile> getTilesBetween(List<Tile> list, Vector3 start, Vector3 end, Rectangle rectangle);
     public abstract void dispose();
 }
