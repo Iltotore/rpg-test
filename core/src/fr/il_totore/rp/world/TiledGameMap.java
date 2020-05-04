@@ -10,12 +10,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import fr.il_totore.rp.entity.Entity;
+import fr.il_totore.rp.util.Collision;
 import fr.il_totore.rp.util.Comparison;
-import fr.il_totore.rp.util.Condition;
+import fr.il_totore.rp.util.TernaryValue;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class TiledGameMap extends GameMap {
 
@@ -71,12 +70,12 @@ public class TiledGameMap extends GameMap {
 
     @Override
     public int getWidth() {
-        return ((TiledMapTileLayer)map.getLayers().get(0)).getWidth();
+        return ((TiledMapTileLayer) map.getLayers().get(0)).getWidth();
     }
 
     @Override
     public int getHeight() {
-        return ((TiledMapTileLayer)map.getLayers().get(0)).getHeight();
+        return ((TiledMapTileLayer) map.getLayers().get(0)).getHeight();
     }
 
     @Override
@@ -92,63 +91,63 @@ public class TiledGameMap extends GameMap {
     @Override
     public Optional<Tile> getTile(Vector3 position) {
         if(position.x < 0 || position.y < 0 || position.z < 0) return Optional.empty();
-        if(getLayers() <= (int)position.z) return Optional.empty();
+        if(getLayers() <= (int) position.z) return Optional.empty();
         List<List<Tile>> layer = getLayer((int) position.z);
-        if(layer.size() <= (int)position.x) return Optional.empty();
+        if(layer.size() <= (int) position.x) return Optional.empty();
         List<Tile> line = layer.get((int) position.x);
-        if(line.size() <= (int)position.y) return Optional.empty();
-        return Optional.of(line.get((int)position.y));
+        if(line.size() <= (int) position.y) return Optional.empty();
+        return Optional.of(line.get((int) position.y));
     }
 
     @Override
-    public List<Tile> getTilesBetween(List<Tile> list, Vector3 start, Vector3 end, Rectangle rectangle) {
+    public Set<Collision> getTilesBetween(Set<Collision> set, Vector3 start, Vector3 end) {
         Comparison<Float> compX = Comparison.of(start.x, end.x);
         Comparison<Float> compY = Comparison.of(start.y, end.y);
         Comparison<Float> compZ = Comparison.of(start.z, end.z);
-        for(int z = compZ.getMin().intValue(); z < compZ.getMax(); z++) {
-            for(int x = compX.getMin().intValue(); x < compX.getMax(); x++) {
-                for(int y = compY.getMin().intValue(); y < compY.getMax(); y++) {
-                    /*list.add(getTile(new Vector3(x+rectangle.x, y+rectangle.y, z)));
-                    list.add(getTile(new Vector3(x+rectangle.width, y+rectangle.y, z)));
-                    list.add(getTile(new Vector3(x+rectangle.x, y+rectangle.height, z)));
-                    list.add(getTile(new Vector3(x+rectangle.width, y+rectangle.height, z)));*/
+        for(float z = compZ.getMin(); z <= compZ.getMax(); z++) {
+            for(float x = compX.getMin(); x <= compX.getMax(); x++) {
+                for(float y = compY.getMin(); y <= compY.getMax(); y++) {
+                    float diffX = x-start.x;
+                    float diffY = y-start.y;
+                    getTile(new Vector3(x, y, z)).ifPresent(tile -> set.add(new Collision(tile, new Vector2(diffX, diffY))));
                 }
             }
         }
-        return list;
+        return set;
     }
 
     @Override
-    public Optional<Tile> findFirstCollision(Vector3 position, Rectangle boundingBox, Vector3 end) {
-        Vector3 intPos = new Vector3((int)position.x, (int)position.y, (int)position.z);
-        Vector3 intEnd = new Vector3((int)end.x, (int)end.y, (int)end.z);
-        Vector3 direction = intEnd.sub(intPos).nor();
-        Rectangle intBB = new Rectangle((int)position.x, (int)position.y, (int)boundingBox.width, (int)boundingBox.height);
-        float dst = intPos.dst(intEnd);
+    public Optional<Collision> findFirstCollision(Vector3 position, Rectangle boundingBox, Vector3 end) {
+        Vector3 pos = position.cpy();
+        Vector3 direction = end.cpy().sub(pos).nor();
+        Rectangle intBB = new Rectangle((int) position.x, (int) position.y, boundingBox.width, boundingBox.height);
+        float dst = pos.dst(end);
         float angleRad = new Vector2(direction.x, direction.y).angleRad();
-        boolean right = Math.cos(angleRad) > 0;
-        boolean up = Math.sin(angleRad) > 0;
-        Condition<Tile> condition = Condition.empty();
-        for(float alpha = 0; alpha < dst; alpha++){
-            intPos.add(direction);
-            intBB.setPosition(intPos.x, intPos.y);
-            if(right || up) condition = Condition.of(getTile(new Vector3(intBB.x+intBB.width, intBB.y+intBB.height, intPos.z)))
-                    .onlyIf(tile -> tile.isColliding(position, boundingBox));
-            if(condition.isPresent()) return condition.asOptional();
-
-            if(right || !up) condition = Condition.of(getTile(new Vector3(intBB.x+intBB.width, intBB.y, intPos.z)))
-                    .onlyIf(tile -> tile.isColliding(position, boundingBox));
-            if(condition.isPresent()) return condition.asOptional();
-
-            if(!right || up) condition = Condition.of(getTile(new Vector3(intBB.x, intBB.y+intBB.height, intPos.z)))
-                    .onlyIf(tile -> tile.isColliding(position, boundingBox));
-            if(condition.isPresent()) return condition.asOptional();
-
-            if(!right || !up) condition = Condition.of(getTile(new Vector3(intBB.x, intBB.y, intPos.z)))
-                    .onlyIf(tile -> tile.isColliding(position, boundingBox));
-            if(condition.isPresent()) return condition.asOptional();
+        double cos = Math.round(Math.cos(angleRad)*1E6);
+        double sin = Math.round(Math.sin(angleRad)*1E6);
+        TernaryValue right = TernaryValue.of(cos > 0).orElse(cos < 0);
+        TernaryValue up = TernaryValue.of(sin > 0).orElse(sin < 0);
+        Set<Collision> set = new HashSet<>();
+        for(float alpha = 0; alpha < dst; alpha++) {
+            pos.add(direction);
+            intBB.setPosition(pos.x, pos.y);
+            Optional<Collision> collidingTile = getCollidingTile(set, position, boundingBox, right, up);
+            if(collidingTile.isPresent()) return collidingTile;
         }
 
         return Optional.empty();
+    }
+
+    private Optional<Collision> getCollidingTile(Set<Collision> set, Vector3 position, Rectangle boundingBox, TernaryValue right, TernaryValue up){
+        if(right.isTrue()) getTilesBetween(set, new Vector3(position.x+boundingBox.width, position.y, position.z), new Vector3(position.x+boundingBox.width, position.y+boundingBox.height, position.z));
+        if(right.isFalse()) getTilesBetween(set, new Vector3(position.x, position.y, position.z), new Vector3(position.x, position.y+boundingBox.height, position.z));
+
+        if(up.isTrue()) getTilesBetween(set, new Vector3(position.x, position.y+boundingBox.height, position.z), new Vector3(position.x+boundingBox.width, position.y+boundingBox.height, position.z));
+        if(up.isFalse()) getTilesBetween(set, new Vector3(position.x, position.y, position.z), new Vector3(position.x+boundingBox.width, position.y, position.z));
+
+
+        return set.stream()
+                .filter(collision -> collision.getTile().isColliding(position, boundingBox))
+                .findAny();
     }
 }

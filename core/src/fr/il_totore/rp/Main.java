@@ -12,11 +12,9 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import fr.il_totore.rp.entity.Player;
-import fr.il_totore.rp.key.HoldInputProcessor;
-import fr.il_totore.rp.key.Input;
-import fr.il_totore.rp.key.InputController;
-import fr.il_totore.rp.key.KeyInputType;
+import fr.il_totore.rp.key.*;
 import fr.il_totore.rp.util.CompositeVelocity;
 import fr.il_totore.rp.world.GameMap;
 import fr.il_totore.rp.world.TiledGameMap;
@@ -33,15 +31,18 @@ public class Main extends ApplicationAdapter implements InputProcessor {
     private GameMap gameMap;
     private float deltaX, deltaY;
     private InputController controller;
+    private boolean pos = false;
+    private Stage stage;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         controller = new InputController();
-        controller.put(new HoldInputProcessor(Keys.RIGHT), input -> player.walk(CompositeVelocity.RIGHT, new Vector3(0.2f, 0, 0)));
-        controller.put(new HoldInputProcessor(Keys.LEFT), input -> player.walk(CompositeVelocity.LEFT, new Vector3(-0.2f, 0, 0)));
-        controller.put(new HoldInputProcessor(Keys.UP), input -> player.walk(CompositeVelocity.UP, new Vector3(0, 0.2f, 0)));
-        controller.put(new HoldInputProcessor(Keys.DOWN), input -> player.walk(CompositeVelocity.DOWN, new Vector3(0, -0.2f, 0)));
+        controller.put(new HoldInputProcessor(Keys.RIGHT), input -> player.walk(CompositeVelocity.RIGHT, new Vector3(1, 0, 0)));
+        controller.put(new HoldInputProcessor(Keys.LEFT), input -> player.walk(CompositeVelocity.LEFT, new Vector3(-1, 0, 0)));
+        controller.put(new HoldInputProcessor(Keys.UP), input -> player.walk(CompositeVelocity.UP, new Vector3(0, 1, 0)));
+        controller.put(new HoldInputProcessor(Keys.DOWN), input -> player.walk(CompositeVelocity.DOWN, new Vector3(0, -1, 0)));
+        controller.put(new ToggleInputProcessor(new Input(KeyInputType.DOWN, Keys.P)), input -> pos = !pos);
         Gdx.input.setInputProcessor(this);
 
         float w = Gdx.graphics.getWidth();
@@ -53,15 +54,19 @@ public class Main extends ApplicationAdapter implements InputProcessor {
         TiledMap map = new TmxMapLoader().load("map.tmx");
         gameMap = new TiledGameMap(map, new OrthogonalTiledMapRenderer(map), new ArrayList<>());
 
-        player = new Player(gameMap, new Vector3(camera.position)) {
+        player = new Player(gameMap, new Vector3(14, 14, 1)) {
             @Override
             public void render(SpriteBatch batch) {
+                if(pos) System.out.println(player.getPosition());
                 camera.position.set(player.getPosition().cpy().add(0.5f, 0.5f, 0).scl(32, 32, 1));
                 super.render(batch);
             }
         };
         gameMap.addEntity(player);
         gameMap.load();
+
+        stage = new Stage();
+
         resize((int) w, (int) h);
     }
 
@@ -69,6 +74,7 @@ public class Main extends ApplicationAdapter implements InputProcessor {
     public void resize(int width, int height) {
         SCALE_AFFINE.setToScaling(width, height);
         camera.setToOrtho(false, width, height);
+        stage.getViewport().update(width, height);
     }
 
     @Override
@@ -93,42 +99,44 @@ public class Main extends ApplicationAdapter implements InputProcessor {
     @Override
     public boolean keyDown(int i) {
         controller.control(new Input(KeyInputType.DOWN, i));
+        stage.keyDown(i);
         return true;
     }
 
     @Override
     public boolean keyUp(int i) {
         controller.control(new Input(KeyInputType.UP, i));
+        stage.keyUp(i);
         return true;
     }
 
     @Override
     public boolean keyTyped(char c) {
-        return false;
+        return stage.keyTyped(c);
     }
 
     @Override
     public boolean touchDown(int i, int i1, int i2, int i3) {
-        return false;
+        return stage.touchDown(i, i1, i2, i3);
     }
 
     @Override
     public boolean touchUp(int i, int i1, int i2, int i3) {
-        return false;
+        return stage.touchUp(i, i1, i2, i3);
     }
 
     @Override
     public boolean touchDragged(int i, int i1, int i2) {
-        return false;
+        return stage.touchDragged(i, i1, i2);
     }
 
     @Override
     public boolean mouseMoved(int i, int i1) {
-        return false;
+        return stage.mouseMoved(i, i1);
     }
 
     @Override
     public boolean scrolled(int i) {
-        return false;
+        return stage.scrolled(i);
     }
 }

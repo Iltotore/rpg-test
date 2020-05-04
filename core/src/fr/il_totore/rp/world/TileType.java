@@ -6,19 +6,20 @@ import java.util.function.Function;
 
 public enum TileType {
 
-    UNKNOWN(-1, false, UnknownTile::new);
+    UNKNOWN("unknown", false, UnknownTile::new),
+    VOID("void", true, VoidTile::new);
 
-    private int id;
+    private String id;
     private boolean collidable;
     private Function<Vector3, Tile> tileFunction;
 
-    TileType(int id, boolean collidable, Function<Vector3, Tile> tileFunction){
+    TileType(String id, boolean collidable, Function<Vector3, Tile> tileFunction){
         this.id = id;
         this.collidable = collidable;
         this.tileFunction = tileFunction;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -30,9 +31,9 @@ public enum TileType {
         return tileFunction.apply(position);
     }
 
-    public static TileType getById(int id){
+    public static TileType getById(String id){
         for(TileType type : values()){
-            if(type.getId() == id) return type;
+            if(type.getId().equals(id)) return type;
         }
         return UNKNOWN;
     }

@@ -6,6 +6,11 @@
    <property name="Type" value="void"/>
   </properties>
  </tile>
+ <tile id="147">
+  <properties>
+   <property name="bb" value="0.3;0.3;0.7;0.7"/>
+  </properties>
+ </tile>
  <tile id="177" type="void">
   <properties>
    <property name="Type" value="void"/>
@@ -56,9 +61,9 @@
    <property name="Type" value="void"/>
   </properties>
  </tile>
- <tile id="202" type="void">
+ <tile id="202">
   <properties>
-   <property name="Type" value="void"/>
+   <property name="bb" value="0;0;1;1"/>
   </properties>
  </tile>
  <tile id="203" type="void">

@@ -50,4 +50,12 @@ public class Comparison<T extends Comparable<T>> {
     public static <T extends Comparable<T>> Comparison<T> of(T min, T max){
         return new Comparison<>(max, min).compare();
     }
+
+    @Override
+    public String toString() {
+        return "Comparison{" +
+                "max=" + max +
+                ", min=" + min +
+                '}';
+    }
 }
