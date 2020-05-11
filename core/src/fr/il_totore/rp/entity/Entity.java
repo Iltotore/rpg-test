@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import fr.il_totore.rp.PhysicalObject;
 import fr.il_totore.rp.util.Collision;
 import fr.il_totore.rp.util.CompositeVelocity;
 import fr.il_totore.rp.util.TexturedSprite;
@@ -14,7 +15,7 @@ import fr.il_totore.rp.world.Tile;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public abstract class Entity {
+public abstract class Entity implements PhysicalObject {
 
     private EntityType<? extends Entity> type;
     private Rectangle boundingBox;
@@ -35,8 +36,14 @@ public abstract class Entity {
         return type;
     }
 
+    @Override
     public Rectangle getBoundingBox() {
         return boundingBox;
+    }
+
+    @Override
+    public Rectangle getPhysicalBox() {
+        return new Rectangle(boundingBox).setPosition(position.x, position.y);
     }
 
     public Vector3 getPosition() {
@@ -74,10 +81,10 @@ public abstract class Entity {
     public void move(Vector3 movement) {
         Vector3 nextPos = position.cpy().add(movement);
         Vector3 direction = nextPos.cpy().sub(position).nor();
-        moveTo(nextPos, new Vector2(direction.x, direction.y));
+        moveTo(nextPos, movement, new Vector2(direction.x, direction.y));
     }
 
-    public void moveTo(Vector3 nextPos, Vector2 direction) {
+    public void moveTo(Vector3 nextPos, Vector3 movement, Vector2 direction) {
         Vector3 nextPosition = nextPos.cpy();
 
         Optional<Collision> tileOptional = map.findFirstCollision(position, boundingBox, nextPosition);
@@ -85,40 +92,18 @@ public abstract class Entity {
         tileOptional.ifPresent(collision -> {
             Tile tile = collision.getTile();
             double angle = Math.atan2(direction.y, direction.x);
-            /*double quarterAngle = angle % (Math.PI / 4);
-            double cos = Math.cos(quarterAngle);
-            float length = (float) (0.5 / cos);
-            direction.setLength(length);
-            System.out.println("dir=" + direction);
-            System.out.println("pt=" + collision.getRelativePoint());
-            System.out.println("width=" + tile.getBoundingBox().width);
 
-            nextPosition.set(tile.getPosition())
-                    .add(tile.getBoundingBox().width / 2f, tile.getBoundingBox().height / 2f, 0)
-                    .add(new Vector3(direction.x, direction.y, 0));*/
+            float cos = (float) (Math.round(Math.cos(angle) * 1E6) / 1E6);
+            float sin = (float) (Math.round(Math.sin(angle) * 1E6) / 1E6);
 
-            Rectangle collideRect = new Rectangle(boundingBox).merge(tile.getBoundingBox());
-            float cos = (float)(Math.round(Math.cos(angle)*1E6)/1E6);
-            float sin = (float) (Math.round(Math.sin(angle)*1E6)/1E6);
-            boolean dividerBool = Math.abs(cos) > Math.abs(sin);
-            float divider = dividerBool ? cos : sin;
-            float adjacent = dividerBool ? collideRect.width : collideRect.height;
-            float length = adjacent/divider;
-            direction.setLength(length);
-            //if(length < 0) direction.scl(-1);
+            Vector3 dirToTile = movement.cpy()
+                    .scl(Math.abs(cos), Math.abs(sin), 1);
 
-            Vector3 bbDirection = new Vector3(getBoundingBox().width, getBoundingBox().height, 1)
-                    .scl(cos, sin, 1);
+            nextPosition.set(position)
+                    .sub(dirToTile);
 
-            System.out.println(collideRect);
-            System.out.println(divider);
-            System.out.println(length);
-            System.out.println(direction);
-
-            nextPosition.set(tile.getPosition())
-                    //.sub(bbDirection)
-                    .sub(direction.x, direction.y, 0);
-
+            System.out.println(getBoundingBox());
+            System.out.println(tile.getPosition());
             velocity.forEach(vector -> vector.scl(0));
         });
 
